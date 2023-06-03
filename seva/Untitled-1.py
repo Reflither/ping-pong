@@ -1,16 +1,4 @@
 from pygame import *
-from random import randint
-from time import time as timer
-
-wind = display.set_mode((700,500))
-display.set_caption('Пинг-Пон')
-background = transform.scale(image.load('fon.jpg'),(700,500))
-
-font.init()
-font = font.SysFont('Arial',30)
-win = font.render('YOU WIN!',True,(0, 255, 0))
-lose = font.render('YOU LOSE!',True,(255, 0, 0))
-
 
 class GameSprite(sprite.Sprite):
     def __init__(self,player_image,player_x,player_y,player_speed,wight,height):
@@ -25,13 +13,13 @@ class GameSprite(sprite.Sprite):
         wind.blit(self.image,(self.rect.x,self.rect.y))
 
 class Player(GameSprite):
-    def update_p(self):
+    def update_r(self):
         keys_p = key.get_pressed()
         if keys_p[K_UP] and self.rect.y > 5:
             self.rect.y -= self.speed
         if keys_p[K_DOWN] and self.rect.y < win_height - 80:
             self.rect.x += self.speed
-    def update_p(self):
+    def update_l(self):
         keys_p = key.get_pressed()
         if keys_p[K_w] and self.rect.y > 5:
             self.rect.y -= self.speed
@@ -39,84 +27,46 @@ class Player(GameSprite):
             self.rect.x += self.speed
 
 
-ball = GameSprite('ball.png',10,450,420)
-play1 = Player('raketka.png',10,450,420)
-play2 = Player('raketka.png',10,450,420)
+ball = GameSprite('ball.png',150,20,0,65,65)
+play1 = Player('raketka.png',5,10,15,20,100)
+play2 = Player('raketka.png',975,350,15,20,100)
 
 game = True
 finish = False
-    speed_x = 3
-    speed_y = 3
-
-    while game:
-        for i in event.get():
-            if i.type == QUIT:
-                
-        if finish != True:
-            ball.rect.x += speed_x
-            ball.rect.x += speed_y
-
-        if ball.rect.
-
-        if ball.rect.x < 0
-        finish = True
-clock = time.Clock()
-FPS = 60
-finish = False
-rel_time = False
+speed_x = 3
+speed_y = 3
+font.init()
+font=font.Font(None,66)
+lose1=font.render("Проиграл левый игрок")
+lose2=font.render("Проиграл правый игрок")
 while game:
     for i in event.get():
         if i.type == QUIT:
             game = False
-        if i.type == KEYDOWN:   
-            if i.key == K_SPACE:
-                if num_fire < 15:
-                    hero.fire()
-                    fire.play()
-                    num_fire += 1
-                if num_fire >= 15:
-                    rel_time = True
-                    w = timer()
-
     if not finish:
-        text_lose = font.render('Пропущено: '+str(lost), True,(255,255,255))
-        count = font.render('Счёт: '+str(ezz), True,(255,255,255))
-        wind.blit(background,(0,0))
-        per = font.render('Перезарядка',True,(255,255,255))
-        wind.blit(count,(10,35))
-        wind.blit(text_lose,(10,10))
+        win.fill((123,54,33))
+        ball.reset()
+        play1.reset()
+        play2.reset()
+        play1.update_r()
+        play2.update_l()
 
-        hero.update()
-        monst.update()
-        hero.reset()
-        buls.update()
-        monst.draw(wind)
-        buls.draw(wind)
-        asts.update()
-        asts.draw(wind)
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
 
-        if rel_time == True:
-            t = timer()
-            if t - w <= 3:
-                wind.blit(per,(300,450))
-            else:
-                num_fire = 0
-                rel_time = False
+    if ball.rect.y > 500 or ball.rect.y < 0:
+        speed_y *= -1
 
-        death = sprite.groupcollide(monst,buls,True,True)
-        if sprite.spritecollide(hero,monst,False) or lost > 4:
-            finish = True
-            wind.blit(lose,(325,200))
-        for e in death:
-            ezz += 1
-            ufo1 = Enemy('ufo.png',3,randint(10,570),0)
-            monst.add(ufo1)
-        if ezz == 10:
-            finish = True
-            wind.blit(win,(325,200))
+    if sprite.collide_rect(play1,ball) or sprite.collide_rect(play2,ball):
+        speed_y *= -1
+
+    if ball.rect.x < 0:
+        finish = True
+        win.blit(lose1,(400,200))
+
+    if ball.rect.x > 1000:
+        finish = True
+        win.blit(lose2,(400,200))
 
     display.update()
-    clock.tick(FPS)
-
-
-        
+    clock.tick(60)
